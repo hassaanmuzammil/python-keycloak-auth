@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy.orm import Session
 
-from app.services.keycloak_service import get_token
+from app.services.keycloak_service import get_token_standard_flow
 
 router = APIRouter()
 
@@ -12,7 +12,7 @@ def login(
     password: str
 ):
     try:
-        token = get_token(
+        token = get_token_standard_flow(
             username=username,
             password=password
         )

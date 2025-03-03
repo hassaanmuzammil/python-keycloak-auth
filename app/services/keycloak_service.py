@@ -3,15 +3,14 @@ from keycloak import KeycloakAdmin, KeycloakOpenIDConnection
 
 from app.config import KEYCLOAK_SERVER_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID, KEYCLOAK_CLIENT_SECRET
 
-print(KEYCLOAK_CLIENT_ID, KEYCLOAK_CLIENT_SECRET)
 
 def get_token():
     
     url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
     payload = {   
         "grant_type": "client_credentials",
-        "client_id": "admin-cli",
-        "client_secret": "LfGJTPq2nnyP5lUMa7aavxqlKkKKuwwh"
+        "client_id": KEYCLOAK_CLIENT_ID,
+        "client_secret": KEYCLOAK_CLIENT_SECRET
     }
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     

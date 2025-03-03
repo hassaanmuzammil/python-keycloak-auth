@@ -22,7 +22,6 @@ def create_user_endpoint(
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ):
     token = header.credentials
-    print("Received token:", token, type(token))
     try:
         keycloak_payload = {
             "username": user_data.username,

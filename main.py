@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import user, login
+from app.routes import user, login, auth
 
 # Create the FastAPI app instance
 app = FastAPI()
@@ -17,6 +17,7 @@ app.add_middleware(
 # Include the user routes in the FastAPI app
 app.include_router(user.router)
 app.include_router(login.router)
+app.include_router(auth.router)
 
 @app.get("/")
 def read_root():
