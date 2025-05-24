@@ -5,7 +5,6 @@ from app.config import KEYCLOAK_SERVER_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID, 
 
 
 def get_token():
-    
     url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
     payload = {   
         "grant_type": "client_credentials",
@@ -110,6 +109,21 @@ def create_user_keycloak(
         "Content-Type": "application/json"
     }
     
+    email = user_data.get("email")
+    username = user_data.get("username")
+
+    keycloak_user = get_user_keycloak(token, username=username, email=email)
+    # If user already exists, enable the user if it is disabled
+    if keycloak_user:
+        enable_disable_user_keycloak(
+            token=token, 
+            keycloak_user_id=keycloak_user["id"],
+            enable=True
+        )
+        # TODO: change user password if provided
+        return keycloak_user["id"]
+
+    # If user does not exist, create a new one
     response = requests.post(url, json=user_data, headers=headers)
     
     if response.status_code not in [201, 204]:
@@ -123,6 +137,50 @@ def create_user_keycloak(
     return keycloak_user_id
 
 
+def get_user_keycloak(token: str, username: str = None, email: str = None):
+    """
+        Retrieve a user from Keycloak by username or email.
+    """
+    url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json",
+    }
+    if email:
+        params = {"email": email}
+    elif username:
+        params = {"username": username}
+    else:
+        raise ValueError("Either 'username' or 'email' must be provided to search for a user.")
+    
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code != 200:
+        raise Exception(f"Failed to search user in Keycloak: {response.text}")
+    users = response.json()
+    return users[0] if users else None
+
+
+def enable_disable_user_keycloak(
+    token: str, 
+    keycloak_user_id: str,
+    enable: bool = True
+):
+    url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users/{keycloak_user_id}"
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    payload = {"enabled": True if enable else False}
+
+    response = requests.put(url, headers=headers, json=payload)
+    if response.status_code not in [204, 200]:
+        raise Exception(f"Failed to {'enable' if enable else 'disable'} user in Keycloak: {response.text}")
+
+    return {"msg": f"User {'enabled' if enable else 'disabled'} successfully"}
+
+
 if __name__ == "__main__":
 
     from app.config import (
@@ -134,12 +192,12 @@ if __name__ == "__main__":
         KEYCLOAK_ADMIN_PASSWORD
     )
 
-    token = get_token_standard_flow(
-        username="username-1", 
-        password="password-1"
-    )
+    # token = get_token_standard_flow(
+    #     username="username-1", 
+    #     password="password-1"
+    # )
 
-    # token = get_token()
+    token = get_token()
 
     print(token)
     
@@ -158,3 +216,13 @@ if __name__ == "__main__":
     #     user_data
     # )
     # print(user_id)
+
+    print(get_user_keycloak(
+        token=token["access_token"],
+        username="username-9"
+    ))
+
+    # disable_user_keycloak(
+    #     token=token["access_token"], 
+    #     keycloak_user_id="6c032a59-5a95-440a-84da-49a223f8397e"
+    # )

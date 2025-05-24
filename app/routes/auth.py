@@ -9,11 +9,11 @@ from app.services.keycloak_service import (
     check_token_validity,
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Create the auth endpoint. For test purposes only, this will return a token using client credentials flow.
 # Do not expose this endpoint.
-@router.get("/auth/token/client")
+@router.get("/token/client")
 def auth():
     try:
         token = get_token()
@@ -23,7 +23,7 @@ def auth():
 
 
 # Create the login endpoint
-@router.post("/auth/login")
+@router.post("/login")
 def login(
     username: str,
     password: str
@@ -39,7 +39,7 @@ def login(
 
 
 # Create the refresh token endpoint
-@router.post("/auth/token/refresh")
+@router.post("/token/refresh")
 def refresh(refresh_token: str):
     try:
         token = refresh_access_token(refresh_token)
@@ -49,7 +49,7 @@ def refresh(refresh_token: str):
 
 
 # Create the logout endpoint
-@router.post("/auth/logout")
+@router.post("/logout")
 def logout(refresh_token: str):
     try:
         result = invalidate_token(refresh_token)
@@ -58,7 +58,7 @@ def logout(refresh_token: str):
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/auth/token/validate")
+@router.post("/token/validate")
 def validate_token(token: str):
     response = check_token_validity(token)
     try:

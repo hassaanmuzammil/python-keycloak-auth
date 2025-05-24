@@ -18,7 +18,7 @@ app.add_middleware(
 app.include_router(user.router)
 app.include_router(auth.router)
 
-@app.get("/")
+@app.get("/", tags=["Default"])
 def read_root():
     return {"message": "Welcome to the User Management API!"}
 
