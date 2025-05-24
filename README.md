@@ -46,3 +46,11 @@ See [Keycloak Setup](./keycloak/README.md) for more details.
 7. User logs out by frontend calling logout API with refresh token to revoke session.  
 8. Keycloak session deletion invalidates refresh token and access token immediately.  
 9. Frontend can detect user inactivity and trigger logout to clear tokens and session.  
+
+## Auth & Token Endpoints
+
+- `GET /auth/token/client` — Get access token using client credentials (no user auth needed). Just for testing.
+- `POST /auth/login` — Log in with username/password, get tokens.
+- `POST /auth/token/refresh` — Refresh access token using refresh token.
+- `POST /auth/logout` — Log out by invalidating refresh token.
+- `POST /auth/token/validate` — Validate access or refresh token.
