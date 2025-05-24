@@ -3,4 +3,5 @@ python-dotenv==1.0.1
 sqlalchemy==2.0.38
 psycopg2-binary==2.9.9
 pydantic==2.10.6
-pydantic[email]==2.2.0
+fastapi==0.115.6
+uvicorn==0.25.0

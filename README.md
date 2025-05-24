@@ -7,7 +7,7 @@ Authentication flow for users is managed by a 3rd party auth provider `keycloak`
 
 ### Setup
 
-```
+```sh
 cd keycloak
 docker compose up -d
 ```
@@ -54,3 +54,20 @@ See [Keycloak Setup](./keycloak/README.md) for more details.
 - `POST /auth/token/refresh` — Refresh access token using refresh token.
 - `POST /auth/logout` — Log out by invalidating refresh token.
 - `POST /auth/token/validate` — Validate access or refresh token.
+
+## User Endpoints
+- `POST /users` — Create a new user with the provided details.
+- `GET /users` — Retrieve a list of all users.
+- `GET /users/{user_id}` — Retrieve details of a specific user by their ID.
+- `PUT /users/{user_id}` — Update the details of a specific user by their ID.
+- `DELETE /users/{user_id}` — Delete a specific user by their ID.
+
+## Run
+
+```sh
+# For debug
+uvicorn main:app --reload
+
+# For production
+docker compose up -d
+```
