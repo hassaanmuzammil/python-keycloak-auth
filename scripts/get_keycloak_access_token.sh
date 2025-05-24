@@ -15,9 +15,9 @@
 
 # curl -X POST "http://localhost:8080/realms/realm-1/protocol/openid-connect/token" \
 #      -H "Content-Type: application/x-www-form-urlencoded" \
-#      -d "client_id=admin-cli" \
-#      -d "username=admin" \
-#      -d "password=admin" \
+#      -d "client_id=client-1" \
+#      -d "username=email-1@gmail.com" \
+#      -d "password=password-1" \
 #      -d "grant_type=password"
 
 # curl -X POST "$KEYCLOAK_SERVER_URL/realms/$KEYCLOAK_REALM/protocol/openid-connect/token" \

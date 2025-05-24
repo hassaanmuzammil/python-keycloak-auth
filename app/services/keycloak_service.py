@@ -29,6 +29,7 @@ def get_token_standard_flow(
     url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
     payload = {
         "client_id": KEYCLOAK_CLIENT_ID,
+        "client_secret": KEYCLOAK_CLIENT_SECRET,
         "username": username,
         "password": password,
         "grant_type": "password"
@@ -79,12 +80,12 @@ if __name__ == "__main__":
         KEYCLOAK_ADMIN_PASSWORD
     )
 
-    # token = get_token_standard_flow(
-    #     username="admin", 
-    #     password="admin"
-    # )
+    token = get_token_standard_flow(
+        username="username", 
+        password="password"
+    )
 
-    token = get_token()
+    # token = get_token()
 
     print(token)
     
