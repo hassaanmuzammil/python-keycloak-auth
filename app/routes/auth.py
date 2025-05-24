@@ -13,8 +13,8 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 # Create the auth endpoint. For test purposes only, this will return a token using client credentials flow.
 # Do not expose this endpoint.
-@router.get("/token/client")
-def auth():
+@router.get("/token/client-credentials")
+def get_token_client_credentials():
     try:
         token = get_token()
         return token

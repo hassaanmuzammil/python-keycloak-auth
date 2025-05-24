@@ -12,12 +12,12 @@ from app.crud.user import create_user, get_user, update_user, delete_user
 from app.services.keycloak_service import get_token, create_user_keycloak, enable_disable_user_keycloak
 from app.config import KEYCLOAK_SERVER_URL, KEYCLOAK_REALM
 
-router = APIRouter(prefix="/user", tags=["User"])
+router = APIRouter(prefix="/users", tags=["User"])
 
 # Initialize the HTTPBearer scheme for authentication
 bearer_scheme = HTTPBearer()
 
-@router.post("/create", response_model=UserRead)
+@router.post("", response_model=UserRead)
 def create_user_endpoint(
     user_data: UserCreate,
     session: Session = Depends(get_db),  # Dependency to get the database session
@@ -71,7 +71,7 @@ def get_user_endpoint(
         raise HTTPException(status_code=500, detail="Unexpected error: " + str(e))
 
 
-@router.put("/update/{user_id}", response_model=UserRead)
+@router.put("/{user_id}", response_model=UserRead)
 def update_user_endpoint(
     user_id: str,
     user_data: UserUpdate,
@@ -97,7 +97,7 @@ def update_user_endpoint(
         raise HTTPException(status_code=500, detail="Unexpected error: " + str(e))
 
 
-@router.delete("/delete/{user_id}")
+@router.delete("/{user_id}")
 def delete_user_endpoint(
     user_id: str,
     session: Session = Depends(get_db),
