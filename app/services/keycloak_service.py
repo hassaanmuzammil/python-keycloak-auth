@@ -17,7 +17,7 @@ def get_token():
     response = requests.post(url, data=payload, headers=headers)
     
     if response.status_code == 200:
-        return response.json()["access_token"]
+        return response.json()
     else:
         print(f"Error: {response.text}")
 
@@ -39,7 +39,7 @@ def get_token_standard_flow(
     response = requests.post(url, data=payload, headers=headers)
     
     if response.status_code == 200:
-        return response.json()["access_token"]
+        return response.json()
     else:
         print(f"Error: {response.text}")
 
@@ -81,8 +81,8 @@ if __name__ == "__main__":
     )
 
     token = get_token_standard_flow(
-        username="username", 
-        password="password"
+        username="username-1", 
+        password="password-1"
     )
 
     # token = get_token()

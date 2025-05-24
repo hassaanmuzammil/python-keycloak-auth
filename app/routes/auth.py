@@ -10,6 +10,6 @@ router = APIRouter()
 def auth():
     try:
         token = get_token()
-        return {"access_token": token, "token_type": "bearer"}
+        return token
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

@@ -16,6 +16,6 @@ def login(
             username=username,
             password=password
         )
-        return {"access_token": token, "token_type": "bearer"}
+        return token
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
