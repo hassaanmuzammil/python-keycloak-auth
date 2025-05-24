@@ -18,7 +18,7 @@ router = APIRouter(prefix="/users", tags=["User"])
 bearer_scheme = HTTPBearer()
 
 @router.post("", response_model=UserRead)
-def create_user_endpoint(
+def create_new_user(
     user_data: UserCreate,
     session: Session = Depends(get_db),  # Dependency to get the database session
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -54,7 +54,7 @@ def create_user_endpoint(
 
 
 @router.get("/{user_id}", response_model=UserRead)
-def get_user_endpoint(
+def get_user_by_id(
     user_id: str,
     session: Session = Depends(get_db),
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -71,8 +71,26 @@ def get_user_endpoint(
         raise HTTPException(status_code=500, detail="Unexpected error: " + str(e))
 
 
+@router.get("", response_model=list[UserRead])
+def get_all_users(
+    session: Session = Depends(get_db),
+    header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    page: int = 1,
+    page_size: int = 10,
+):
+    try:
+        query = session.query(User).filter(User.deleted_at == None)
+        users = query.offset((page - 1) * page_size).limit(page_size).all()
+
+        # Return empty list if no users found, no 404
+        return [UserRead.model_validate(user) for user in users]
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Unexpected error: " + str(e))
+
+
 @router.put("/{user_id}", response_model=UserRead)
-def update_user_endpoint(
+def update_user_by_id(
     user_id: str,
     user_data: UserUpdate,
     session: Session = Depends(get_db),
@@ -98,7 +116,7 @@ def update_user_endpoint(
 
 
 @router.delete("/{user_id}")
-def delete_user_endpoint(
+def delete_user_by_id(
     user_id: str,
     session: Session = Depends(get_db),
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
