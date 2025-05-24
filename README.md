@@ -24,7 +24,11 @@ See [Keycloak Setup](./keycloak/README.md) for more details.
     - `Direct Access Grants`
     - `Standard Flow`
     - `Service Account Roles`
+    ![Client Settings](./docs/image.png)
+
+    
 - In the service account roles, assign `manage-users` and `view-users` roles to the client.
+![Client Service Accounts Roles](./docs/image-1.png)
 
 | Purpose                       | Flow to Use                                                                                              | Why                                                                                                                                             |
 | ----------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
