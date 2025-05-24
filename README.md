@@ -30,3 +30,15 @@ See [Keycloak Setup](./keycloak/README.md) for more details.
 | ----------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Creating/managing users**   | Service Accounts (Client Credentials Grant)                                                              | The client (backend app) authenticates itself with client ID & secret, gets an admin token, and calls Keycloak Admin API to create/manage users. |
 | **User login/authentication** | Direct Access Grants (Resource Owner Password Credentials) or better: Standard Flow (Authorization Code) | Users provide their username/password, your app gets user tokens to allow access to the application.                                    |
+
+## Authentication flow
+
+1. Backend uses client credentials to create users in Keycloak realm.  
+2. User logs in with username and password.  
+3. Keycloak returns access token (short-lived) and refresh token (long-lived).  
+4. Frontend sends access token with API requests to authenticate user.  
+5. When access token expires, frontend uses refresh token to request a new access token.  
+6. If refresh token is invalid or expired, user must log in again.  
+7. User logs out by frontend calling logout API with refresh token to revoke session.  
+8. Keycloak session deletion invalidates refresh token and access token immediately.  
+9. Frontend can detect user inactivity and trigger logout to clear tokens and session.  

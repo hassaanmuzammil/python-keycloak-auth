@@ -15,11 +15,7 @@ def get_token():
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     
     response = requests.post(url, data=payload, headers=headers)
-    
-    if response.status_code == 200:
-        return response.json()
-    else:
-        print(f"Error: {response.text}")
+    return response.json()
 
 
 def get_token_standard_flow(
@@ -37,11 +33,69 @@ def get_token_standard_flow(
     headers = {"Content-Type": "application/x-www-form-urlencoded"}
     
     response = requests.post(url, data=payload, headers=headers)
+    return response.json()
+
+
+def refresh_access_token(
+    refresh_token: str
+):
+    """
+    Refresh an access token using a refresh token.
+    """
+    url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token"
     
-    if response.status_code == 200:
-        return response.json()
+    payload = {
+        "client_id": KEYCLOAK_CLIENT_ID,
+        "client_secret": KEYCLOAK_CLIENT_SECRET,
+        "refresh_token": refresh_token,
+        "grant_type": "refresh_token"
+    }
+    
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    
+    response = requests.post(url, data=payload, headers=headers)
+    return response.json()
+
+
+def invalidate_token(
+    refresh_token: str
+):
+    """
+    Invalidate a refresh token in Keycloak.
+    """
+    logout_url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/logout"
+
+    data = {
+        "client_id": KEYCLOAK_CLIENT_ID,
+        "client_secret": KEYCLOAK_CLIENT_SECRET,
+        "refresh_token": refresh_token
+    }
+
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    response = requests.post(logout_url, data=data, headers=headers)
+    if response.status_code in [200, 204]:
+        return {"msg": "Logout successful"}
     else:
-        print(f"Error: {response.text}")
+        return {"msg": "Invalid refresh token"}
+
+
+def check_token_validity(token: str):
+    """
+    Introspect a token using Keycloak to check if it's active.
+    """
+    introspect_url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/token/introspect"
+
+    data = {
+        "token": token,
+        "client_id": KEYCLOAK_CLIENT_ID,
+        "client_secret": KEYCLOAK_CLIENT_SECRET
+    }
+
+    headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    response = requests.post(introspect_url, data=data, headers=headers)
+
+    return response.json()
+
 
 def create_user_keycloak(
     token: str,
