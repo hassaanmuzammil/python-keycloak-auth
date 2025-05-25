@@ -9,7 +9,12 @@ from app.database import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserRead, UserUpdate
 from app.crud.user import create_user, get_user, update_user, delete_user
-from app.services.keycloak_service import get_token, create_user_keycloak, enable_disable_user_keycloak
+from app.services.keycloak_service import (
+    get_token, 
+    create_user_keycloak, 
+    enable_disable_user_keycloak, 
+    send_email_verification_link,
+)
 from app.config import KEYCLOAK_SERVER_URL, KEYCLOAK_REALM
 
 router = APIRouter(prefix="/users", tags=["User"])
@@ -27,7 +32,6 @@ def create_new_user(
     # Token belongs to the user making the request. 
     # Check if the user has permission to create a new user.
     # token = header.credentials
-
     try:
         keycloak_payload = {
             "username": user_data.username,
@@ -38,16 +42,22 @@ def create_new_user(
             "credentials": [{"type": "password", "value": user_data.password, "temporary": False}]
         }
         # Now use the token to make the request to Keycloak 
-        keycloak_id = create_user_keycloak(
-            get_token()["access_token"], # token using client credentials, client is authorized to manage users
+        token = get_token()["access_token"]
+        keycloak_user_id = create_user_keycloak(
+            token, # token using client credentials, client is authorized to manage users
             keycloak_payload
         )
 
         user_data = user_data.dict(exclude={"password"})
-        user_data["keycloak_id"] = keycloak_id
+        user_data["keycloak_id"] = keycloak_user_id
 
         # Proceed to create user in PostgreSQL after Keycloak
-        return create_user(session, **user_data)
+        created_user = create_user(session, **user_data)
+        
+        # Send email verification link
+        send_email_verification_link(token, keycloak_user_id)
+
+        return created_user
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -105,6 +115,7 @@ def update_user_by_id(
             first_name=user_data.first_name,
             last_name=user_data.last_name,
             phone_number=user_data.phone_number,
+            email_verified=user_data.email_verified,
         )
         return updated_user
     except ValueError as e:

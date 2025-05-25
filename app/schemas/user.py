@@ -19,6 +19,7 @@ class UserCreate(UserBase):
 class UserRead(UserBase):
     id: uuid.UUID
     keycloak_id: uuid.UUID
+    email_verified: bool
     created_at: datetime
     updated_at: datetime
     deleted_at: Optional[datetime] = None
@@ -31,3 +32,4 @@ class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     phone_number: Optional[str] = None
+    email_verified: Optional[bool] = None

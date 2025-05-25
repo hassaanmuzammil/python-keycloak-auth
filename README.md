@@ -1,7 +1,6 @@
 # python-keycloak-auth
 
-A custom `users` database for maintaining users and their associated features (basic information, roles, permissions, links) for an application.
-Authentication flow for users is managed by a 3rd party auth provider `keycloak`.
+A custom `users` service for maintaining users and their associated features (basic information, roles, permissions, links) for an application. Authentication flow for users is managed by a 3rd party auth provider `keycloak`.
 
 ## Keycloak
 
@@ -9,7 +8,7 @@ Authentication flow for users is managed by a 3rd party auth provider `keycloak`
 
 ```sh
 cd keycloak
-docker compose up -d
+docker compose up -d postgres keycloak
 ```
 
 Starts a Postgres DB and a Keycloak service which can be accessed at http://localhost:8080
@@ -61,6 +60,23 @@ See [Keycloak Setup](./keycloak/README.md) for more details.
 - `GET /users/{user_id}` — Retrieve details of a specific user by their ID.
 - `PUT /users/{user_id}` — Update the details of a specific user by their ID.
 - `DELETE /users/{user_id}` — Delete a specific user by their ID.
+
+## MailHog
+
+MailHog is a testing tool that acts as a `fake SMTP server`. It captures emails sent by applications and provides a web interface to view them.
+
+### Setup
+
+```sh
+cd keycloak
+docker compose up -d mailhog
+```
+
+### Details
+- MailHog listens on a port (usually `1025`) like an SMTP server.
+- When Keycloak sends an email via SMTP, MailHog intercepts it instead of delivering it to a real mail server. No real emails are sent.
+- Captured emails can be viewed in MailHog’s web UI, typically accessible at [http://localhost:8025](http://localhost:8025).
+
 
 ## Run
 

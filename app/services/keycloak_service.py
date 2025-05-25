@@ -181,6 +181,27 @@ def enable_disable_user_keycloak(
     return {"msg": f"User {'enabled' if enable else 'disabled'} successfully"}
 
 
+def send_email_verification_link(
+    token: str,
+    user_id: str,
+    redirect_url: str = None
+):
+    """
+    Send an email verification link to the user.
+    """
+    url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users/{user_id}/execute-actions-email"
+    params = {"redirect_uri": redirect_url} if redirect_url else {}
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    data = ["VERIFY_EMAIL"]
+
+    response = requests.put(url, params=params, headers=headers, json=data)
+    response.raise_for_status()
+    return response.status_code
+
+
 if __name__ == "__main__":
 
     from app.config import (
@@ -188,8 +209,6 @@ if __name__ == "__main__":
         KEYCLOAK_REALM,
         KEYCLOAK_CLIENT_ID,
         KEYCLOAK_CLIENT_SECRET,
-        KEYCLOAK_ADMIN,
-        KEYCLOAK_ADMIN_PASSWORD
     )
 
     # token = get_token_standard_flow(

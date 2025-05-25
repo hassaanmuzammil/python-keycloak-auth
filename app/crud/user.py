@@ -27,6 +27,7 @@ def create_user(
             existing_user.first_name = first_name
             existing_user.last_name = last_name
             existing_user.phone_number = phone_number
+            existing_user.email_verified = False
             session.commit()
             session.refresh(existing_user)
             return UserRead.model_validate(existing_user)
@@ -65,6 +66,7 @@ def update_user(
     first_name: str = None,
     last_name: str = None,
     phone_number: str = None,
+    email_verified: bool = None,
 ) -> UserRead:
     
     user = get_user(session, user_id)
@@ -78,6 +80,10 @@ def update_user(
         user.last_name = last_name
     if phone_number is not None:
         user.phone_number = phone_number
+    
+    print(f"Updating user {user_id} with email_verified={email_verified}")
+    if email_verified is not None:
+        user.email_verified = email_verified
 
     session.commit()
     session.refresh(user)
@@ -108,7 +114,8 @@ if __name__ == "__main__":
         "first_name": f"firstname-{i}",
         "last_name": f"lastname-{i}",
         "email": f"email-{i}@gmail.com",
-        "phone_number": "09001234576"
+        "phone_number": "09001234576",
+        "email_verified": True
     }
 
     create_user(
@@ -119,7 +126,8 @@ if __name__ == "__main__":
     # user_data = {
     #     "first_name": f"firstname-{i}-updated",
     #     "last_name": f"lastname-{i}-updated",
-    #     "phone_number": "09001234569"
+    #     "phone_number": "09001234569",
+    #     "email_verified": False
     # }
 
     # update_user(
