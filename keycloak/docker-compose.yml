@@ -8,6 +8,7 @@ services:
       POSTGRES_DB: keycloak
       POSTGRES_USER: keycloak
       POSTGRES_PASSWORD: password
+    restart: always
     ports:
       - 5433:5432
     volumes:
@@ -32,5 +33,13 @@ services:
     restart: always
     depends_on:
       - postgres
+
+  mailhog:
+    image: mailhog/mailhog
+    container_name: demo-mail
+    restart: always
+    ports:
+      - 8025:8025
+
 volumes:
   keycloak_data:
