@@ -39,6 +39,9 @@ def login(
             password=password
         )
 
+        if "access_token" not in token:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
+
         # Decode JWT to get Keycloak ID (subject)
         public_key = get_keycloak_public_key()
         decoded = jwt.decode(
