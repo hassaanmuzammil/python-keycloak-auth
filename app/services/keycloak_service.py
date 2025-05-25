@@ -1,4 +1,5 @@
 import requests
+from jose import jwt
 from keycloak import KeycloakAdmin, KeycloakOpenIDConnection
 
 from app.config import KEYCLOAK_SERVER_URL, KEYCLOAK_REALM, KEYCLOAK_CLIENT_ID, KEYCLOAK_CLIENT_SECRET
@@ -33,6 +34,19 @@ def get_token_standard_flow(
     
     response = requests.post(url, data=payload, headers=headers)
     return response.json()
+
+
+
+def get_keycloak_public_key():
+    """
+    Retrieve the public key from Keycloak for JWT verification.
+    """
+    url = f"{KEYCLOAK_SERVER_URL}/realms/{KEYCLOAK_REALM}/protocol/openid-connect/certs"
+    jwks = requests.get(url).json()
+    for key in jwks["keys"]:
+        if key["alg"] == "RS256" and key["use"] == "sig":
+            return key
+    raise Exception("No valid RSA signing key found.")
 
 
 def refresh_access_token(
@@ -139,7 +153,7 @@ def create_user_keycloak(
 
 def get_user_keycloak(token: str, username: str = None, email: str = None):
     """
-        Retrieve a user from Keycloak by username or email.
+    Retrieve a user from Keycloak by username or email.
     """
     url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users"
     headers = {
@@ -216,9 +230,9 @@ if __name__ == "__main__":
     #     password="password-1"
     # )
 
-    token = get_token()
+    # token = get_token()
 
-    print(token)
+    # print(token)
     
     # i = 3
     # user_data = {
@@ -236,12 +250,14 @@ if __name__ == "__main__":
     # )
     # print(user_id)
 
-    print(get_user_keycloak(
-        token=token["access_token"],
-        username="username-9"
-    ))
+    # print(get_user_keycloak(
+    #     token=token["access_token"],
+    #     username="username-9"
+    # ))
 
     # disable_user_keycloak(
     #     token=token["access_token"], 
     #     keycloak_user_id="6c032a59-5a95-440a-84da-49a223f8397e"
     # )
+
+    print(get_keycloak_public_key())
