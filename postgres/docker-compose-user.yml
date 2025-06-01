@@ -12,5 +12,6 @@ services:
       - user_data:/var/lib/postgresql/data
     ports:
       - 5434:5432
+    restart: always
 volumes:
   user_data:
