@@ -129,12 +129,15 @@ def create_user_keycloak(
     keycloak_user = get_user_keycloak(token, username=username, email=email)
     # If user already exists, enable the user if it is disabled
     if keycloak_user:
+        keycloak_user_id = keycloak_user["id"]
         enable_disable_user_keycloak(
             token=token, 
-            keycloak_user_id=keycloak_user["id"],
+            keycloak_user_id=keycloak_user_id,
             enable=True
         )
-        # TODO: change user password if provided
+        new_password = user_data.get("credentials", [{}])[0].get("value")
+        reset_password_keycloak(token, keycloak_user_id, new_password)
+
         return keycloak_user["id"]
 
     # If user does not exist, create a new one
@@ -216,6 +219,30 @@ def send_email_verification_link(
     return response.status_code
 
 
+def reset_password_keycloak(
+    token: str, 
+    user_id: str, 
+    new_password: str
+):
+    """
+    Reset the password for a user in Keycloak.
+    """
+    url = f"{KEYCLOAK_SERVER_URL}/admin/realms/{KEYCLOAK_REALM}/users/{user_id}/reset-password"
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "type": "password",
+        "temporary": False,
+        "value": new_password
+    }
+
+    response = requests.put(url, headers=headers, json=payload)
+    if not response.ok:
+        raise Exception(f"Failed to reset password in Keycloak: {response.text}")
+
+
 if __name__ == "__main__":
 
     from app.config import (
@@ -230,7 +257,7 @@ if __name__ == "__main__":
     #     password="password-1"
     # )
 
-    # token = get_token()
+    token = get_token()
 
     # print(token)
     
@@ -260,4 +287,6 @@ if __name__ == "__main__":
     #     keycloak_user_id="6c032a59-5a95-440a-84da-49a223f8397e"
     # )
 
-    print(get_keycloak_public_key())
+    # print(get_keycloak_public_key())
+
+    # reset_password_keycloak(token["access_token"], "8922cf36-8435-4628-a0ce-4ee25c54e8f3", "new-password-1")
