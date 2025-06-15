@@ -19,7 +19,7 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 # Create the auth endpoint. For test purposes only, this will return a token using client credentials flow.
 # Do not expose this endpoint.
 @router.get("/token/client-credentials")
-def get_token_client_credentials():
+async def get_token_client_credentials():
     try:
         token = get_token()
         return token
@@ -29,7 +29,7 @@ def get_token_client_credentials():
 
 # Create the login endpoint
 @router.post("/login")
-def login(
+async def login(
     username: str,
     password: str,
     session: Session = Depends(get_db)
@@ -69,7 +69,7 @@ def login(
 
 # Create the refresh token endpoint
 @router.post("/token/refresh")
-def refresh(refresh_token: str):
+async def refresh(refresh_token: str):
     try:
         token = refresh_access_token(refresh_token)
         return token
@@ -79,7 +79,7 @@ def refresh(refresh_token: str):
 
 # Create the logout endpoint
 @router.post("/logout")
-def logout(refresh_token: str):
+async def logout(refresh_token: str):
     try:
         result = invalidate_token(refresh_token)
         return result
@@ -88,7 +88,7 @@ def logout(refresh_token: str):
 
 
 @router.post("/token/validate")
-def validate_token(token: str):
+async def validate_token(token: str):
     response = check_token_validity(token)
     try:
         return response
@@ -97,7 +97,7 @@ def validate_token(token: str):
 
 
 @router.post("/reset-password")
-def reset_password(
+async def reset_password(
     user_id: str,
     new_password: str,
     session: Session = Depends(get_db)

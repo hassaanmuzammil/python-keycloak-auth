@@ -23,7 +23,7 @@ router = APIRouter(prefix="/users", tags=["User"])
 bearer_scheme = HTTPBearer()
 
 @router.post("", response_model=UserRead)
-def create_new_user(
+async def create_new_user(
     user_data: UserCreate,
     session: Session = Depends(get_db),  # Dependency to get the database session
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -64,7 +64,7 @@ def create_new_user(
 
 
 @router.get("/{user_id}", response_model=UserRead)
-def get_user_by_id(
+async def get_user_by_id(
     user_id: str,
     session: Session = Depends(get_db),
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
@@ -82,7 +82,7 @@ def get_user_by_id(
 
 
 @router.get("", response_model=list[UserRead])
-def get_all_users(
+async def get_all_users(
     session: Session = Depends(get_db),
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
     page: int = 1,
@@ -100,7 +100,7 @@ def get_all_users(
 
 
 @router.put("/{user_id}", response_model=UserRead)
-def update_user_by_id(
+async def update_user_by_id(
     user_id: str,
     user_data: UserUpdate,
     session: Session = Depends(get_db),
@@ -127,7 +127,7 @@ def update_user_by_id(
 
 
 @router.delete("/{user_id}")
-def delete_user_by_id(
+async def delete_user_by_id(
     user_id: str,
     session: Session = Depends(get_db),
     header: HTTPAuthorizationCredentials = Depends(bearer_scheme),
