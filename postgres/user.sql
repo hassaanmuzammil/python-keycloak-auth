@@ -73,6 +73,7 @@ CREATE TABLE public.role_capability_link (
 	created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp NULL,
+	CONSTRAINT role_capability_unique UNIQUE (role_id, capability_id),
 	CONSTRAINT role_capability_link_capability_id_fkey FOREIGN KEY (capability_id) REFERENCES public.capability(id),
 	CONSTRAINT role_capability_link_role_id_fkey FOREIGN KEY (role_id) REFERENCES public."role"(id)
 );
@@ -91,6 +92,7 @@ CREATE TABLE public.user_role_link (
 	created_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 	updated_at timestamp NULL DEFAULT CURRENT_TIMESTAMP,
 	deleted_at timestamp NULL,
+	CONSTRAINT user_role_unique UNIQUE (user_id, role_id),
 	CONSTRAINT user_role_link_role_id_fkey FOREIGN KEY (role_id) REFERENCES public."role"(id),
 	CONSTRAINT user_role_link_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."user"(id)
 );
