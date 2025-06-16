@@ -1,12 +1,11 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, func, ForeignKey 
+from sqlalchemy import Column, String, DateTime, Boolean, ForeignKey, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database import Base
 
-# User model
 class User(Base):
     __tablename__ = "user"
 
@@ -22,11 +21,12 @@ class User(Base):
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
 
-    # roles = relationship(
-    #     "Role",
-    #     secondary="user_role_link",
-    #     back_populates="users"
-    # )
+    roles = relationship(
+        "Role",
+        secondary=lambda: UserRole.__table__,
+        back_populates="users"
+    )
+
 
 class Role(Base):
     __tablename__ = "role"
@@ -38,17 +38,18 @@ class Role(Base):
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
 
-    # users = relationship(
-    #     "User",
-    #     secondary="user_role_link",
-    #     back_populates="roles"
-    # )
+    users = relationship(
+        "User",
+        secondary=lambda: UserRole.__table__,
+        back_populates="roles"
+    )
 
     capabilities = relationship(
         "Capability",
-        secondary="role_capability_link",
+        secondary=lambda: RoleCapability.__table__,
         back_populates="roles"
     )
+
 
 class UserRole(Base):
     __tablename__ = "user_role_link"
@@ -57,6 +58,7 @@ class UserRole(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     role_id = Column(UUID(as_uuid=True), ForeignKey("role.id", ondelete="CASCADE"), nullable=False)
     created_at = Column(DateTime, server_default=func.now())
+
 
 class Capability(Base):
     __tablename__ = "capability"
@@ -69,9 +71,10 @@ class Capability(Base):
 
     roles = relationship(
         "Role",
-        secondary="role_capability_link",
+        secondary=lambda: RoleCapability.__table__,
         back_populates="capabilities"
     )
+
 
 class RoleCapability(Base):
     __tablename__ = "role_capability_link"
