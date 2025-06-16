@@ -1,6 +1,7 @@
 import uuid
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, func, ForeignKey
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, func, ForeignKey 
+from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from app.database import Base
@@ -21,6 +22,12 @@ class User(Base):
     updated_at = Column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
 
+    # roles = relationship(
+    #     "Role",
+    #     secondary="user_role_link",
+    #     back_populates="users"
+    # )
+
 class Role(Base):
     __tablename__ = "role"
 
@@ -30,6 +37,18 @@ class Role(Base):
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
     deleted_at = Column(DateTime, nullable=True)
+
+    # users = relationship(
+    #     "User",
+    #     secondary="user_role_link",
+    #     back_populates="roles"
+    # )
+
+    capabilities = relationship(
+        "Capability",
+        secondary="role_capability_link",
+        back_populates="roles"
+    )
 
 class UserRole(Base):
     __tablename__ = "user_role_link"
@@ -47,6 +66,12 @@ class Capability(Base):
     description = Column(String, nullable=True)
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    roles = relationship(
+        "Role",
+        secondary="role_capability_link",
+        back_populates="capabilities"
+    )
 
 class RoleCapability(Base):
     __tablename__ = "role_capability_link"
